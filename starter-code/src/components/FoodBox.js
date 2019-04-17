@@ -7,12 +7,14 @@ class FoodBox extends Component {
   state = {
     foods: foods,
     search: '',
-    filteredFoods: foods
+    filteredFoods: foods,
+    order: [],
+    quantity: 0
   }
 
   showFoods() {
     console.log(this)
-    let foodList = this.state.foods.map((food, i) => {
+    let foodList = this.state.filteredFoods.map((food, i) => {
       return (
         <div className="box">
           <article className="media">
@@ -35,13 +37,12 @@ class FoodBox extends Component {
                   <input
                     className="input"
                     type="number"
-                    value="1"
                   />
                 </div>
                 <div className="control">
-                  <button className="button is-info">
+                  <button className="button is-info" onClick={() => this.pushOrder(food)}>
                     +
-          </button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -73,16 +74,31 @@ class FoodBox extends Component {
     e.preventDefault()
     let search = e.target.value
     console.log(search, 'search')
-    let filteredFoods = this.state.foods.filter(food => food.name.includes(search))
+    let filteredFoods = this.state.foods.filter(food => food.name.toLowerCase().includes(search.toLowerCase()))
     console.log(filteredFoods, 'filteredFoods')
     this.setState({
       search,
-      foods: filteredFoods
+      filteredFoods: filteredFoods
     })
+  }
+
+  pushOrder = (food) => {
+    console.log(food)
+    this.setState({
+      order: [...this.state.order, ...[food]]
+    })
+  }
+
+  showOrder = () => {
+    let yourOrder = this.state.order.map((o) => {
+      return <li>{o.name}, {o.calories} </li>
+    })
+    return yourOrder
   }
   
 
   render() {
+    
     return (
       <div>
         <SearchBar handleChange={this.handleChange}/>
@@ -99,7 +115,15 @@ class FoodBox extends Component {
           {/* <input name="food" type="text" onChange={(e) => this.handleChange(e)}/> */}
           <button>Add Food</button>
         </form>
-        {this.showFoods()}
+        <div className="food-container">
+          <div>
+            {this.showFoods()}
+          </div>
+          <div>
+            <h2>Today's Foods</h2>
+            {this.showOrder()}
+          </div>
+        </div>   
       </div>
     )
   }
